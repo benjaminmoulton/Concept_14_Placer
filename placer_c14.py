@@ -126,9 +126,9 @@ def get_dist(vals):
 
     # scale specific values in the vals dictionary
     for i in range(len(vals["ducted fan cg [in]"])):
-        vals["ducted fan cg [in]"] *= vals["scale"]
+        vals["ducted fan cg [in]"][i] *= vals["scale"]
     for i in range(len(vals["ducted fan diameter, width, and height [in]"])):
-        vals["ducted fan diameter, width, and height [in]"] *= vals["scale"]
+        vals["ducted fan diameter, width, and height [in]"][i] *= vals["scale"]
     vals["ducted fan cover thickness [in]"] *= vals["scale"]
     vals["z bump"]["Lz [in]"] *= vals["scale"]
     vals["z bump"]["Rz [in]"] *= vals["scale"]
