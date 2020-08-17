@@ -121,8 +121,19 @@ def get_dist(vals):
         if dist[i,1] < 0.0:
             dist[i,4] *= -1.
     
-    # put units for cpx,cpy,cpz,chord in terms of inches
-    dist[:,:4] *= 12.
+    # put units for cpx,cpy,cpz,chord in terms of inches and scale them
+    dist[:,:4] *= 12. * vals["scale"]
+
+    # scale specific values in the vals dictionary
+    for i in range(len(vals["ducted fan cg [in]"])):
+        vals["ducted fan cg [in]"] *= vals["scale"]
+    for i in range(len(vals["ducted fan diameter, width, and height [in]"])):
+        vals["ducted fan diameter, width, and height [in]"] *= vals["scale"]
+    vals["ducted fan cover thickness [in]"] *= vals["scale"]
+    vals["z bump"]["Lz [in]"] *= vals["scale"]
+    vals["z bump"]["Rz [in]"] *= vals["scale"]
+    vals["wing tip y start [in]"] *= vals["scale"]
+    
     
     # create dxf file of lines that can be used to define planes
     # determine where the "mid point" lies -- index of last negative y value
