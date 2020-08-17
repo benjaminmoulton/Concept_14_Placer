@@ -290,12 +290,12 @@ def make_interpolations(dist,vals):
 
     # determine lengths
     # determine where the fan portion starts
-    b.append(vals["ducted fan y-cg and width [in]"][0]-\
-        vals["ducted fan y-cg and width [in]"][1]/2.)
+    b.append(vals["ducted fan cg [in]"][1]-\
+        vals["ducted fan diameter, width, and height [in]"][1]/2.)
     ismorphing.append(False); name.append("fan"); spec.append("fan")
     # determine where the fan portion ends
-    b.append(vals["ducted fan y-cg and width [in]"][0]+\
-        vals["ducted fan y-cg and width [in]"][1]/2.)
+    b.append(vals["ducted fan cg [in]"][1]+\
+        vals["ducted fan diameter, width, and height [in]"][1]/2.)
     ismorphing.append(True); name.append("servo00"); spec.append("sv0")
 
     # determine the servo lengths
@@ -312,6 +312,9 @@ def make_interpolations(dist,vals):
     b.append(dist[-1,1])
     # save to vals
     b = np.array(b)
+    
+    # for j in range(b.shape[0]-1):
+    #     print("{:<8} {:>5.2f} {:>5.2f} {:>5.2f}".format(name[j],b[j],b[j+1],b[j+1]-b[j]))
 
     # initialize important things
     vals["b"] = b
@@ -1613,7 +1616,41 @@ def main(input_file):
         pltxyz,bist,hist = make_parts(dist,vals,airframe_guidecurves)
 
         # Dallin Code
+        # 1. CG for the ducted fan can be found in the 'vals' dictionary
+        #    as vals["ducted fan cg [in]"] where
+        #    vals["..."][0] is the x cg coordinate, 
+        #    vals["..."][1] is the y cg coordinate, 
+        #    and vals["..."][2] is the z cg coordinate
+        # 2. Ducted fan height can be found in the 'vals' dictionary
+        #    as vals["ducted fan diameter, width, and height [in]"][2] 
+        # 3. Diameter of the fan can be found in the 'vals' dictionary
+        #    as vals["ducted fan diameter, width, and height [in]"][0]
+        # 4. Material thickness above fan can be found in the 'vals' dictionary
+        #    as vals["ducted fan cover thickness [in]"]
+        # 5. Guide Curves Points
+        #    these points can be found in the afpts variable. This can be split
+        #    out into afx, afy, and afz using "afx,afy,afz = afpts". These are 
+        #    numpy nd arrays somewhere around 40 long, where each index is a
+        #    numpy array of the airfoil x y and z coordinates respectively.
+        #    the span values for each of these 40ish indices can be found in
+        #    the dist numpy array from index start to the end ie. dist[start:]
+        # 5. NOTE
+        #    I will be updating this code to give it a number of points for the
+        #    airfoil outline ( I am doing it in C18, this is for C14 because I
+        #    have not written placer_c18.py yet...). You can assume for right
+        #    now that there are exactly 200 points in each airfoil shape, 
+        #    as that is what I have hardcoded in in C14_geoPRECISE.py
+        #    and airfoil calculations
+        # 6. Lz variable can be found from in the 'vals' dictionary 
+        #    as vals["z bump"]["Lz [in]"]
+        # 7. Rz variable can be found from in the 'vals' dictionary 
+        #    as vals["z bump"]["Rz [in]"]
+        # 8. # of GC for aft transition variable can be found from in the 
+        #    'vals' dictionary as vals["z bump"]["number guide curves aft"]
+        # 9. # of GC for forward transition variable can be found from in the 
+        #    'vals' dictionary as vals["z bump"]["number guide curves forward"]
 
+        
         # create lines for planes
         folder += "Base/"
         make_planes(bist,vals,folder,"00_Base_sect_RPlane")
