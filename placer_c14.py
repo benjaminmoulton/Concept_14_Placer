@@ -326,7 +326,7 @@ def make_interpolations(dist,vals):
     
     # for j in range(b.shape[0]-1):
     #     print("{:<8} {:>5.2f} {:>5.2f} {:>5.2f}".format(name[j],b[j],b[j+1],b[j+1]-b[j]))
-
+    print("chord at sv00 tip is {}".format(vals["c(y)"](b[-2])))
     # initialize important things
     vals["b"] = b
     vals["is morphing"] = ismorphing
@@ -423,7 +423,7 @@ def make_shapes(dist,start,vals):
             x = np.insert(x,0,x[-1])
             y = np.insert(y,0,y[-1])
     # determine camberline values
-    x_cam = 0.25; y_cam = foil.get_camber(x_cam)
+    x_cam = 0.25; y_cam = 0#foil.get_camber(x_cam)
 
     # save to airfoil shape
     x = np.array([x[:100],x[99:]]) - x_cam

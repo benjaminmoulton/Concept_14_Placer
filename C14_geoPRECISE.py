@@ -1270,7 +1270,7 @@ def deflection(x,y,O,info):
 def shift(x,y,O):
     # determine shift values
     x_shift = 0.25
-    y_shift = O["c"](x_shift)
+    y_shift = 0#O["c"](x_shift)
 
     # shift each group/index
     if type(x) == dict:
