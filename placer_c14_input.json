@@ -1,20 +1,23 @@
 {
     "run" : ["Placed"],
     "Placed" : {
-        "distributions file" : "/home/ben/Desktop/dxf_work/horizonV0_distributions_Aug17_2020.txt",
+        "distributions file" : "horizonV0_distributions_Aug17_2020.txt",
         "write as" : "spline",
         "plane line length" : 1.0,
         "actuators per semispan" : 5,
         "actuators per semispan NOTES" : "Excluding 1 for bay center section",
-        "scale" : 1.0,
-        "ducted fan cg [in]" : [unkn,6.5,unkn],
-        "ducted fan diameter, width, and height [in]" : [unkn,4.0,unkn],
-        "ducted fan cover thickness [in]" : unkn,
+        "scale" : 0.5,
+        "scale notes" : ["1.0 for 4.312","0.927576226 for 4.0","1.15947028 for 5.0",
+        "1.391364336 for 6.0","1.623258392 for 7.0","1.855152448 for 8.0"],
+        "ducted fan cg [in]" : [??,6.5,??],
+        "ducted fan diameter, width, and length [in]" : [??,4.0,??],
+        "ducted fan cover thickness [in]" : ??,
         "z bump" : {
-            "Lz [in]" : unkn,
-            "Rz [in]" : unkn,
-            "number guide curves aft" : uknk,
-            "number guide curves forward" : unkn
+            "span range Behind [in]" : ??,
+            "span range Over [in]" : ??,
+            "span range Front [in]" : ??,
+            "number guide curves aft" : ??,
+            "number guide curves forward" : ??
         },
         "wing tip y start [in]" : 43.2,
         "actuation gap width [in]" : 1,

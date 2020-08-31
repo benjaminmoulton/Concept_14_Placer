@@ -127,8 +127,8 @@ def get_dist(vals):
     # scale specific values in the vals dictionary
     for i in range(len(vals["ducted fan cg [in]"])):
         vals["ducted fan cg [in]"][i] *= vals["scale"]
-    for i in range(len(vals["ducted fan diameter, width, and height [in]"])):
-        vals["ducted fan diameter, width, and height [in]"][i] *= vals["scale"]
+    for i in range(len(vals["ducted fan diameter, width, and length [in]"])):
+        vals["ducted fan diameter, width, and length [in]"][i] *= vals["scale"]
     vals["ducted fan cover thickness [in]"] *= vals["scale"]
     vals["z bump"]["Lz [in]"] *= vals["scale"]
     vals["z bump"]["Rz [in]"] *= vals["scale"]
@@ -302,11 +302,11 @@ def make_interpolations(dist,vals):
     # determine lengths
     # determine where the fan portion starts
     b.append(vals["ducted fan cg [in]"][1]-\
-        vals["ducted fan diameter, width, and height [in]"][1]/2.)
+        vals["ducted fan diameter, width, and length [in]"][1]/2.)
     ismorphing.append(False); name.append("fan"); spec.append("fan")
     # determine where the fan portion ends
     b.append(vals["ducted fan cg [in]"][1]+\
-        vals["ducted fan diameter, width, and height [in]"][1]/2.)
+        vals["ducted fan diameter, width, and length [in]"][1]/2.)
     ismorphing.append(True); name.append("servo00"); spec.append("sv0")
 
     # determine the servo lengths
@@ -424,6 +424,10 @@ def make_shapes(dist,start,vals):
             y = np.insert(y,0,y[-1])
     # determine camberline values
     x_cam = 0.25; y_cam = 0#foil.get_camber(x_cam)
+
+    # Dallin airfoil shape
+    vals["x zb-af"] = x - x_cam
+    vals["y zb-af"] = y - y_cam
 
     # save to airfoil shape
     x = np.array([x[:100],x[99:]]) - x_cam
@@ -1633,9 +1637,9 @@ def main(input_file):
         #    vals["..."][1] is the y cg coordinate, 
         #    and vals["..."][2] is the z cg coordinate
         # 2. Ducted fan height can be found in the 'vals' dictionary
-        #    as vals["ducted fan diameter, width, and height [in]"][2] 
+        #    as vals["ducted fan diameter, width, and length [in]"][2] 
         # 3. Diameter of the fan can be found in the 'vals' dictionary
-        #    as vals["ducted fan diameter, width, and height [in]"][0]
+        #    as vals["ducted fan diameter, width, and length [in]"][0]
         # 4. Material thickness above fan can be found in the 'vals' dictionary
         #    as vals["ducted fan cover thickness [in]"]
         # 5. Guide Curves Points
