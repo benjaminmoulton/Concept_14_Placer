@@ -300,10 +300,11 @@ def main(af,x,y,vals):
             un["x"][i] = uni["x"]; un["y"][i] = uni["y"]
             de["x"][i] = dei["x"]; de["y"][i] = dei["y"]
             pa["x"][i] = pai["x"]; pa["y"][i] = pai["y"]
-        else:
-            un["x"][i] = x[i]; un["y"][i] = y[i]
-            de["x"][i] = x[i]; de["y"][i] = y[i]
-            pa["x"][i] = x[i]; pa["y"][i] = y[i]
+    if type(x[0]) != np.ndarray:
+        uni,dei,pai = get_deflected(af,x,y,vals)
+        un["x"] = x; un["y"][i] = y
+        de["x"] = x; de["y"][i] = y
+        pa["x"] = x; pa["y"][i] = y
 
     if vals["dty"] == "traditional":
         xvals = de["x"]; yvals = de["y"]

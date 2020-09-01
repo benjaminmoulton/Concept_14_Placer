@@ -3,6 +3,7 @@ import json
 import dxf
 import os
 import C14_geoPRECISE as C14
+import zbump_nonmorphing as zmorph
 from scipy import interpolate as interp
 import airfoil_db as adb
 from matplotlib import pyplot as plt
@@ -130,8 +131,13 @@ def get_dist(vals):
     for i in range(len(vals["ducted fan diameter, width, and length [in]"])):
         vals["ducted fan diameter, width, and length [in]"][i] *= vals["scale"]
     vals["ducted fan cover thickness [in]"] *= vals["scale"]
-    vals["z bump"]["Lz [in]"] *= vals["scale"]
-    vals["z bump"]["Rz [in]"] *= vals["scale"]
+    for i in vals["z bump"]["span range Behind [in]"]:
+        i *= vals["scale"]
+    for i in vals["z bump"]["span range Over [in]"]:
+        i *= vals["scale"]
+    for i in vals["z bump"]["span range Front [in]"]:
+        i *= vals["scale"]
+
     vals["wing tip y start [in]"] *= vals["scale"]
     
     
@@ -1228,6 +1234,47 @@ def make_nomenclature(folder):
 
     return
 
+# code to be inserted into 'placer_c14.py'
+def dallin_prelim(vals):
+    # create z array of y values
+    z = np.linspace(vals["b"][1],vals["b"][2],70)
+
+    # create z 2D array in the format of dist
+    zist = np.zeros((z.shape[0],5))
+    zist[:,0] = vals["x(y)"](z)
+    zist[:,1] = z
+    zist[:,2] = vals["z(y)"](z)
+    zist[:,3] = vals["c(y)"](z)
+    zist[:,4] = vals["d(y)"](z)
+    
+    # create guide curve points for an airfoil at each zist location
+    xgc = []
+    ygc = []
+    zgc = []
+    for i in range(zist.shape[0]):
+        x_chord = vals["x zb-af"] * zist[i,3]
+        y_chord = vals["y zb-af"] * zist[i,3]
+        x3d,y3d,z3d = transform_3D(x_chord,y_chord,y_chord*0.,zist,i,i,out_arrays=False)
+        xgc.append(x3d)
+        ygc.append(y3d)
+        zgc.append(z3d)
+
+    # make xgc, ygc, and zgc numpy arrays
+    xgc = np.array(xgc)
+    ygc = np.array(ygc)
+    zgc = np.array(zgc)
+
+    return xgc,ygc,zgc
+
+def zbumper(vals):
+    # get preliminary info
+    xgc,ygc,zgc = dallin_prelim(vals)
+
+    # create zbump
+    xgc,ygc,zgc = zmorph.main(xgc,ygc,zgc,vals)
+
+    return
+
 # create plane lines
 def make_planes(bist,vals,folder,name):
     # report
@@ -1631,41 +1678,8 @@ def main(input_file):
         pltxyz,bist,hist = make_parts(dist,vals,airframe_guidecurves)
 
         # Dallin Code
-        # 1. CG for the ducted fan can be found in the 'vals' dictionary
-        #    as vals["ducted fan cg [in]"] where
-        #    vals["..."][0] is the x cg coordinate, 
-        #    vals["..."][1] is the y cg coordinate, 
-        #    and vals["..."][2] is the z cg coordinate
-        # 2. Ducted fan height can be found in the 'vals' dictionary
-        #    as vals["ducted fan diameter, width, and length [in]"][2] 
-        # 3. Diameter of the fan can be found in the 'vals' dictionary
-        #    as vals["ducted fan diameter, width, and length [in]"][0]
-        # 4. Material thickness above fan can be found in the 'vals' dictionary
-        #    as vals["ducted fan cover thickness [in]"]
-        # 5. Guide Curves Points
-        #    these points can be found in the afpts variable. This can be split
-        #    out into afx, afy, and afz using "afx,afy,afz = afpts". These are 
-        #    numpy nd arrays somewhere around 40 long, where each index is a
-        #    numpy array of the airfoil x y and z coordinates respectively.
-        #    the span values for each of these 40ish indices can be found in
-        #    the dist numpy array from index start to the end ie. dist[start:]
-        # 5. NOTE
-        #    I will be updating this code to give it a number of points for the
-        #    airfoil outline ( I am doing it in C18, this is for C14 because I
-        #    have not written placer_c18.py yet...). You can assume for right
-        #    now that there are exactly 200 points in each airfoil shape, 
-        #    as that is what I have hardcoded in in C14_geoPRECISE.py
-        #    and airfoil calculations
-        # 6. Lz variable can be found from in the 'vals' dictionary 
-        #    as vals["z bump"]["Lz [in]"]
-        # 7. Rz variable can be found from in the 'vals' dictionary 
-        #    as vals["z bump"]["Rz [in]"]
-        # 8. # of GC for aft transition variable can be found from in the 
-        #    'vals' dictionary as vals["z bump"]["number guide curves aft"]
-        # 9. # of GC for forward transition variable can be found from in the 
-        #    'vals' dictionary as vals["z bump"]["number guide curves forward"]
-
-        
+        zbumper(vals)
+                
         # create lines for planes
         folder += "Base/"
         make_planes(bist,vals,folder,"00_Base_sect_RPlane")
